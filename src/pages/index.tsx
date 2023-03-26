@@ -34,9 +34,8 @@ const Home: NextPage = () => {
           <ul>
             {data.data?.map((post) => (
               <li key={post.id}>
-                <Link href={`/posts/${post.id}`}>
                   <a className="text-white">{post.content}</a>
-                </Link>
+
               </li>
             ))}
           </ul>
