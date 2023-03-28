@@ -49,8 +49,9 @@ const PostView = (props: PostWithUser) => {
       <div key={post.id} className="flex gap-3 border-b border-slate-400 p-4"> 
           <img src={author.profileImageUrl} className="h-14 w-14 rounded-full" />
           <div className="flex flex-col">
-            <div className="flex">
+            <div className="flex gap-1 text-slate-300">
               <span>{`@${name}`}</span>
+              <span className="front-thin" >{`• 1h ago`}</span>
             </div>
             <span>{post.content}</span>
           </div>
