@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { api, RouterOutputs } from "~/utils/api";
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { string } from "zod";
 
 
 const CreatePostWizard = () => {
@@ -34,11 +35,26 @@ type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 const PostView = (props: PostWithUser) => {
   const {post, author} = props;
 
+  // if author has no username, use first name
+  let name = string
+  if (!author.username) {
+    name = author.firstName
+  }
+  else {
+    name = author.username
+  }
+
   return (
     <>
-      <div key={post.id} className="border-b border-slate-400 p-8"> 
-                {post.content}
-              </div>
+      <div key={post.id} className="flex gap-3 border-b border-slate-400 p-4"> 
+          <img src={author.profileImageUrl} className="h-14 w-14 rounded-full" />
+          <div className="flex flex-col">
+            <div className="flex">
+              <span>{`@${name}`}</span>
+            </div>
+            <span>{post.content}</span>
+          </div>
+      </div>
     </>
   )
 };

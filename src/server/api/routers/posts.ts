@@ -6,9 +6,9 @@ import { TRPCError } from "@trpc/server";
 
 // filter out sensitive data from the user object
 const filterUserforClient = (user: User) => {
-  return {id: user.id, username: user.username, profileImageUrl: user.profileImagUrl
+  return {id: user.id, username: user.username, profileImageUrl: user.profileImagUrl, firstName: user.firstName,};
 } 
-}
+
 
 
 
@@ -38,7 +38,14 @@ export const postsRouter = createTRPCRouter({
           });
       
 
-      return {post, author,};
+      return {
+        post, 
+        author: {
+          ...author,
+          username: author.username,
+          firstName: author.firstName,
+        },
+      };
     });
   }),
 });
