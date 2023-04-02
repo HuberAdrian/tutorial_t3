@@ -2,9 +2,11 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 
-import { api, RouterOutputs } from "~/utils/api";
+import { api } from "~/utils/api";
+import type { RouterOutputs } from "~/utils/api";
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { string } from "zod";
+import Image from "next/image";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -12,19 +14,19 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
-  const user = useUser();
+  const {user} = useUser();
 
-  // log userid to console 
-  console.log(user);
   // if user is not signed in, return null
   if (!user) return null;
 
   return (
     <div className="flex w-full justify-left">
-      <img 
-        src={user.profileImageUrl}
+      <Image 
         alt="Profile Image"
+        src={user.profileImageUrl}
         className="h-14 w-14 rounded-full"
+        width={56}
+        height={56}
       />
       <input 
         type="text"
@@ -39,22 +41,13 @@ type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 const PostView = (props: PostWithUser) => {
   const {post, author} = props;
 
-  // if author has no username, use first name
-  let name = string
-  if (!author.username) {
-    name = author.firstName
-  }
-  else {
-    name = author.username
-  }
-
   return (
     <>
       <div key={post.id} className="flex gap-3 border-b border-slate-400 p-4"> 
-          <img src={author.profileImageUrl} className="h-14 w-14 rounded-full" />
+          <Image src={author.profileImageUrl} className="h-14 w-14 rounded-full" width={56} height={56} alt={"Profile Image"} />
           <div className="flex flex-col">
             <div className="flex gap-1 text-slate-300">
-              <span>{`@${name}`}</span>
+              <span>{`@${author.firstName}`}</span>
               <span className="front-thin" >{`• ${dayjs(post.createdAt).fromNow()}`}</span>
             </div>
             <span>{post.content}</span>
