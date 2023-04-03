@@ -10,9 +10,12 @@ import Image from "next/image";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { LoadingSpinner } from "~/components/loading";
 
 dayjs.extend(relativeTime);
 
+
+// post something new
 const CreatePostWizard = () => {
   const {user} = useUser();
 
@@ -37,7 +40,12 @@ const CreatePostWizard = () => {
   );
 };
 
+
+// post view
+
+// fetch data from api
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
+
 const PostView = (props: PostWithUser) => {
   const {post, author} = props;
 
@@ -66,7 +74,7 @@ const Home: NextPage = () => {
 
   const user = useUser();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner />;
 
   if (!data) return <div>Something went wrong</div>;
 
