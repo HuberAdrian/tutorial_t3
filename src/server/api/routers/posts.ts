@@ -4,6 +4,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import { privateProcedure } from "~/server/api/trpc";
 
 // filter out sensitive data from the user object
 const filterUserforClient = (user: User) => {
@@ -19,6 +20,7 @@ export const postsRouter = createTRPCRouter({
     const posts = await ctx.prisma.post.findMany(
       {
         take: 100,  
+        orderBy: [{ createdAt: "desc" }], // desc = descending order (newest first)
       }
     );
 
@@ -48,5 +50,26 @@ export const postsRouter = createTRPCRouter({
         },
       };
     });
+  }),
+
+  // with privateProcedure, you can access the user session data (know if they are logged in or not)
+  create: privateProcedure.input(
+    // make sure string is a valid emoji
+    z.object({
+      content: z.string().emoji().min(1).max(280), // cant be empty, max 280 chars
+    })
+
+  ).mutation(async ({ctx, input}) => {
+    // may error already in middleware 
+    const authorId = ctx.userId;
+    
+    const post = await ctx.prisma.post.create({
+      data: {
+        authorId,
+        content: input.content,
+      },
+    });
+  
+    return post;
   }),
 });

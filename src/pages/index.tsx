@@ -12,6 +12,8 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingPage } from "~/components/loading";
 
+import { useState } from "react";
+
 dayjs.extend(relativeTime);
 
 
@@ -19,8 +21,24 @@ dayjs.extend(relativeTime);
 const CreatePostWizard = () => {
   const {user} = useUser();
 
+  const [input, setInput] = useState("");
+
+  // get new post in feed after posted by grap the context cache 
+  const ctx = api.useContext();
+
+  const {mutate, isLoading: isPosting } = api.posts.create.useMutation(
+    { 
+      onSuccess: (data) => {
+        setInput("");
+        void ctx.posts.getAll.invalidate(); // invalidate the cache, void because it's a promise, we don't care about the result, only that is running in the background
+      }
+    }
+  );
+
+
   // if user is not signed in, return null
   if (!user) return null;
+
 
   return (
     <div className="flex w-full justify-left">
@@ -35,8 +53,16 @@ const CreatePostWizard = () => {
         type="text"
         placeholder="What's on your mind?"
         className="bg-transparent grow outline-none"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        disabled={isPosting}
       />
-      </div>
+      <button
+        onClick={() => {
+          mutate({content: input});
+        }}
+      > post </button>
+    </div>
   );
 };
 
@@ -74,7 +100,7 @@ const Feed = () => {
 
   return (
     <div className="flex flex-col"> 
-            {[...data, ...data]?.map((fullPost) => (
+            {data.map((fullPost) => (
               <PostView {...fullPost} key={fullPost.post.id} />
             ))}
     </div>
