@@ -28,7 +28,7 @@ const CreatePostWizard = () => {
 
   const {mutate, isLoading: isPosting } = api.posts.create.useMutation(
     { 
-      onSuccess: (data) => {
+      onSuccess: () => {
         setInput("");
         void ctx.posts.getAll.invalidate(); // invalidate the cache, void because it's a promise, we don't care about the result, only that is running in the background
       }
@@ -58,10 +58,7 @@ const CreatePostWizard = () => {
         disabled={isPosting}
       />
       <button
-        onClick={() => {
-          mutate({content: input});
-        }}
-      > post </button>
+        onClick={() => mutate({content: input})}> Post </button>
     </div>
   );
 };
@@ -89,6 +86,7 @@ const PostView = (props: PostWithUser) => {
     </>
   )
 };
+
 
 
 const Feed = () => {

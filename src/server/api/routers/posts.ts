@@ -6,11 +6,22 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { privateProcedure } from "~/server/api/trpc";
 
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
 // filter out sensitive data from the user object
 const filterUserforClient = (user: User) => {
   console.log(user);
   return {id: user.id, username: user.username, profileImageUrl: user.profileImageUrl, firstName: user.firstName,};
 } 
+
+// create rate limiter for posts that allows 3 requests per 1 minute
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(3, "1 m"), // 10 requests per 10 seconds
+  analytics: true,
+});
+
 
 
 
@@ -63,6 +74,14 @@ export const postsRouter = createTRPCRouter({
     // may error already in middleware 
     const authorId = ctx.userId;
     
+    // rate limit posts
+    const {success} = await ratelimit.limit(authorId);
+    if (!success) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "You are posting too fast. Please wait a minute before posting again.",
+      });
+
     const post = await ctx.prisma.post.create({
       data: {
         authorId,
