@@ -67,7 +67,7 @@ export const postsRouter = createTRPCRouter({
   create: privateProcedure.input(
     // make sure string is a valid emoji
     z.object({
-      content: z.string().emoji().min(1).max(280), // cant be empty, max 280 chars
+      content: z.string().emoji("only Emojis allowed").min(1).max(280), // cant be empty, max 280 chars    //  custom error message for emojis only
     })
 
   ).mutation(async ({ctx, input}) => {
@@ -81,7 +81,7 @@ export const postsRouter = createTRPCRouter({
         code: "TOO_MANY_REQUESTS",
         message: "You are posting too fast. Please wait a minute before posting again.",
       });
-
+    }
     const post = await ctx.prisma.post.create({
       data: {
         authorId,
@@ -90,5 +90,6 @@ export const postsRouter = createTRPCRouter({
     });
   
     return post;
+
   }),
 });

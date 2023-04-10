@@ -13,6 +13,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingPage } from "~/components/loading";
 
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 dayjs.extend(relativeTime);
 
@@ -31,7 +32,17 @@ const CreatePostWizard = () => {
       onSuccess: () => {
         setInput("");
         void ctx.posts.getAll.invalidate(); // invalidate the cache, void because it's a promise, we don't care about the result, only that is running in the background
-      }
+      },
+      onError: (e) => {
+        const errorMessage = e.data?.zodError?.fieldErrors.content;
+        
+        if (errorMessage && errorMessage[0]) {
+        toast.error(errorMessage [0]);
+        } 
+        else {
+        toast.error ("Failed to post! Please try again later.");
+        }
+      },
     }
   );
 
