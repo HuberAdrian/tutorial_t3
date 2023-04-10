@@ -15,7 +15,7 @@ const SinglePostPage: NextPage = () => {
       </Head>
       <main className="flex h-screen justify-center">
         <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
-          <h1>Profile View</h1>
+          <h1>Post View</h1>
         </div>
       </main>
     </>
