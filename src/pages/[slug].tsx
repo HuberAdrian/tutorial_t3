@@ -1,10 +1,11 @@
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import { api } from "~/utils/api";
+import { useUser } from "@clerk/nextjs";
 
 
 const ProfilePage: NextPage<{ username: string}> = ({username}) => {
-  
+  let usernameVar = "Adrian";
   const {data} = api.profile.getUserByUsername.useQuery({
     username,
   });
@@ -12,18 +13,20 @@ const ProfilePage: NextPage<{ username: string}> = ({username}) => {
   // theere is no loading state, because we are using getStaticProps, so we prefetch the data before the page loads
   // only no data state is possible
 
-  if (!data) {
-    return <div>404</div>;
+  if (data?.username) {
+    usernameVar = data.username;
   }
+  
+  
 
   return (
     <>
       <Head>
-        <title>{data.username}</title>
+        <title>{usernameVar}</title>
       </Head>
       <main className="flex h-screen justify-center">
         <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
-          {data.username}
+          {usernameVar}
         </div>
       </main>
     </>
