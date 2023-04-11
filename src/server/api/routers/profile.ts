@@ -5,6 +5,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { privateProcedure } from "~/server/api/trpc";
+import { filterUserforClient } from "~/server/helpers/filterUserForClient";
 
 
 
@@ -27,7 +28,7 @@ export const profileRouter = createTRPCRouter({
         }
         
         // return user
-        return user;
+        return filterUserforClient(user);
     }),
     
 });
