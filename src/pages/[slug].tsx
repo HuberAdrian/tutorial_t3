@@ -3,6 +3,8 @@ import Head from "next/head";
 import { api } from "~/utils/api";
 import { useUser } from "@clerk/nextjs";
 import { PageLayout } from "~/components/layout";
+import Image from "next/image";
+
 
 const ProfilePage: NextPage<{ username: string}> = ({username}) => {
   let usernameVar = "Adrian";
@@ -17,7 +19,6 @@ const ProfilePage: NextPage<{ username: string}> = ({username}) => {
     usernameVar = data.username;
   }
   
-  
 
   return (
     <>
@@ -25,9 +26,12 @@ const ProfilePage: NextPage<{ username: string}> = ({username}) => {
         <title>{usernameVar}</title>
       </Head>
       <PageLayout>
-        <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
-          {usernameVar}
+        <div className="relative h-36 bg-slate-600 ">
+          <Image src={data?.profileImageUrl} alt="Profile Image" height={128} width={128} className="absolute bottom-0 left-0 -mb-[64px] ml-4 border-4 border-black bg-black " />
         </div>
+        <div className="h-[64px]" />
+        <div className="p-4 text-2xl font-bold" >{`@${usernameVar}`}</div>
+        <div className="w-full border-b border-slate-400" />
       </PageLayout>
     </>
   );
