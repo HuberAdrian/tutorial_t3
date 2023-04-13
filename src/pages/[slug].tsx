@@ -2,7 +2,7 @@ import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import { api } from "~/utils/api";
 import { useUser } from "@clerk/nextjs";
-
+import { PageLayout } from "~/components/layout";
 
 const ProfilePage: NextPage<{ username: string}> = ({username}) => {
   let usernameVar = "Adrian";
@@ -24,11 +24,11 @@ const ProfilePage: NextPage<{ username: string}> = ({username}) => {
       <Head>
         <title>{usernameVar}</title>
       </Head>
-      <main className="flex h-screen justify-center">
+      <PageLayout>
         <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
           {usernameVar}
         </div>
-      </main>
+      </PageLayout>
     </>
   );
 };

@@ -7,6 +7,7 @@ import type { RouterOutputs } from "~/utils/api";
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { string } from "zod";
 import Image from "next/image";
+import { PageLayout } from "~/components/layout";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -154,10 +155,7 @@ const Home: NextPage = () => {
 
 
   return (
-    <>
-      
-      <main className="flex h-screen justify-center">
-        <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
+      <PageLayout>
           <div className="flex border-b border-slate-400 p-4">
             {!isSignedIn && (
             <div className="flex justify-center">
@@ -167,9 +165,7 @@ const Home: NextPage = () => {
             {isSignedIn && <CreatePostWizard />}
           </div>
           <Feed />
-        </div>
-      </main>
-    </>
+      </PageLayout>
   );
 };
 
