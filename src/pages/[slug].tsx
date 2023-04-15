@@ -4,6 +4,25 @@ import { api } from "~/utils/api";
 import { useUser } from "@clerk/nextjs";
 import { PageLayout } from "~/components/layout";
 import Image from "next/image";
+import { LoadingPage } from "~/components/loading";
+
+
+const ProfileFeed = (props: {userId: string}) => {
+  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
+    userId: props.userId,
+  });
+
+  if (isLoading) return <LoadingPage />;
+
+
+  if (!data || data.length === 0) return <div>User has not posted</div>;
+
+
+  return (
+    
+  );
+};
+
 
 
 const ProfilePage: NextPage<{ username: string}> = ({username}) => {
@@ -27,7 +46,7 @@ const ProfilePage: NextPage<{ username: string}> = ({username}) => {
       </Head>
       <PageLayout>
         <div className="relative h-36 bg-slate-600 ">
-          <Image src={data?.profileImageUrl} alt="Profile Image" height={128} width={128} className="absolute bottom-0 left-0 -mb-[64px] ml-4 border-4 border-black bg-black " />
+          <Image src={data?.profileImageUrl ?? ""} alt="Profile Image" height={128} width={128} className="absolute bottom-0 left-0 -mb-[64px] ml-4 border-4 border-black bg-black " />
         </div>
         <div className="h-[64px]" />
         <div className="p-4 text-2xl font-bold" >{`@${usernameVar}`}</div>

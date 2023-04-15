@@ -59,6 +59,17 @@ export const postsRouter = createTRPCRouter({
     });
   }),
 
+  // get all posts by a specific user
+  getPostsByUserId: publicProcedure.input(z.object ({
+    userId: z.string(),
+    })).query(({ctx, input}) => ctx.prisma.post.findMany({
+    where: {
+    authorId: input.userId,
+    }, take: 100,
+    orderBy: [{ createdAt: "desc" }], // desc = descending order (newest first)
+  })),
+
+
   // with privateProcedure, you can access the user session data (know if they are logged in or not)
   create: privateProcedure.input(
     // make sure string is a valid emoji
