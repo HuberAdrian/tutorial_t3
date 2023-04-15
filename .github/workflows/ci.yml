@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  DATABASE_UR: "https://fake.com"
+  DATABASE_URL: "https://fake.com"
 
 jobs:
   build:
