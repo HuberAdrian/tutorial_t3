@@ -6,6 +6,7 @@ import { PageLayout } from "~/components/layout";
 import Image from "next/image";
 import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postview";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 
 
 const ProfileFeed = (props: {userId: string}) => {
@@ -64,20 +65,13 @@ const ProfilePage: NextPage<{ username: string}> = ({username}) => {
 };
 
 
-import { createProxySSGHelpers } from "@trpc/react-query/ssg"; import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
-import superison from "superjson";
 
 export const getStaticProps: GetStaticProps = async (context) => { // : GetStaticProps is a type def from Next.js
 
-  // create helpers for SSG
-  const ssg = createProxySSGHelpers({
-    router: appRouter,
-    ctx: { prisma, userId: null },
-    transformer: superison,
-  });
-
+  // helper for SSG
+  const ssg = generateSSGHelper()
   const slug = context.params?.slug;
+
 
   if (typeof slug !== "string") throw new Error("no slug");
 
