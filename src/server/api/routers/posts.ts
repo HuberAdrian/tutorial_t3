@@ -9,6 +9,42 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
 import { filterUserforClient } from "~/server/helpers/filterUserForClient";
+import type { Post } from "@prisma/client";
+
+
+
+
+const addUserDataToPosts = async (posts: Post[]) => {
+  // get user info for all posts using Clerk API
+  const users = (await clerkClient.users.getUserList({
+    userId: posts.map((post) => post.authorId), 
+    limit: 100, // same as above
+    })).map(filterUserforClient);
+
+  return posts.map((post) => {
+
+    const author = users.find((user) => user.id === post.authorId);
+
+    if (!author) 
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR", 
+        message: "Author for post not found",
+        });
+    
+
+    return {
+      post, 
+      author: {
+        ...author,
+        username: author.username,
+        firstName: author.firstName,
+      },
+    };
+  });
+};
+
+
+
 
 
 // create rate limiter for posts that allows 3 requests per 1 minute
@@ -21,42 +57,16 @@ const ratelimit = new Ratelimit({
 
 
 
-
 export const postsRouter = createTRPCRouter({
+  
   getAll: publicProcedure.query(async({ ctx }) => {
     const posts = await ctx.prisma.post.findMany(
       {
         take: 100,  
         orderBy: [{ createdAt: "desc" }], // desc = descending order (newest first)
-      }
-    );
+      });
 
-    // get user info for all posts using Clerk API
-    const users = (await clerkClient.users.getUserList({
-      userId: posts.map((post) => post.authorId), 
-      limit: 100, // same as above
-      })).map(filterUserforClient);
-
-    return posts.map((post) => {
-
-      const author = users.find((user) => user.id === post.authorId);
-
-      if (!author) 
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR", 
-          message: "Author for post not found",
-          });
-      
-
-      return {
-        post, 
-        author: {
-          ...author,
-          username: author.username,
-          firstName: author.firstName,
-        },
-      };
-    });
+    return addUserDataToPosts(posts);
   }),
 
   // get all posts by a specific user
@@ -67,7 +77,8 @@ export const postsRouter = createTRPCRouter({
     authorId: input.userId,
     }, take: 100,
     orderBy: [{ createdAt: "desc" }], // desc = descending order (newest first)
-  })),
+  }).then(addUserDataToPosts)
+  ),
 
 
   // with privateProcedure, you can access the user session data (know if they are logged in or not)

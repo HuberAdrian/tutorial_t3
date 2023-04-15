@@ -5,6 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { PageLayout } from "~/components/layout";
 import Image from "next/image";
 import { LoadingPage } from "~/components/loading";
+import { PostView } from "~/components/postview";
 
 
 const ProfileFeed = (props: {userId: string}) => {
@@ -20,6 +21,11 @@ const ProfileFeed = (props: {userId: string}) => {
 
   return (
     
+    <div className="flex flex-col">
+      {data.map((fullPost) => (
+        <PostView {...fullPost} key={fullPost.post.id} />
+      ))}
+    </div>
   );
 };
 
@@ -51,6 +57,7 @@ const ProfilePage: NextPage<{ username: string}> = ({username}) => {
         <div className="h-[64px]" />
         <div className="p-4 text-2xl font-bold" >{`@${usernameVar}`}</div>
         <div className="w-full border-b border-slate-400" />
+        <ProfileFeed userId={data?.id ?? ""} />
       </PageLayout>
     </>
   );
